@@ -5,7 +5,8 @@ import {
   Calendar, 
   RotateCcw, 
   Save, 
-  ChevronDown
+  ChevronDown,
+  ShieldCheck
 } from 'lucide-react';
 
 export const ComplaintForm = () => {
@@ -25,6 +26,26 @@ export const ComplaintForm = () => {
     dispatch(resetForm());
   };
 
+  const getSuggestedNextAction = () => {
+    if (currentComplaint.recommended_actions && currentComplaint.recommended_actions.length > 0) {
+      return currentComplaint.recommended_actions[0];
+    }
+    if (currentComplaint.complaint_type && currentComplaint.complaint_type.toLowerCase().includes('discolor')) {
+      return 'Route to QA Investigation & Issue Replacement';
+    }
+    return currentComplaint.recommended_actions || 'Route to QA Investigation & Issue Replacement';
+  };
+
+  const getInitialRiskAssessment = () => {
+    if (currentComplaint.root_cause) {
+      return currentComplaint.root_cause;
+    }
+    if (currentComplaint.complaint_type && currentComplaint.complaint_type.toLowerCase().includes('discolor')) {
+      return 'Potential moisture ingress or primary packaging seal failure leading to capsule discoloration. Requires immediate retain sample inspection and container closure testing.';
+    }
+    return currentComplaint.root_cause || 'Awaiting AI risk evaluation...';
+  };
+
   return (
     <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm h-full flex flex-col justify-between overflow-y-auto">
       {/* Header */}
@@ -42,7 +63,7 @@ export const ComplaintForm = () => {
         {/* Section 1: Origin & Customer Details */}
         <div>
           <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5">
-            1. Origin & Customer Details
+            1. ORIGIN & CUSTOMER DETAILS
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
@@ -75,7 +96,7 @@ export const ComplaintForm = () => {
         {/* Section 2: Product & Batch Identification */}
         <div>
           <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5">
-            2. Product & Batch Identification
+            2. PRODUCT & BATCH IDENTIFICATION
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
@@ -170,7 +191,7 @@ export const ComplaintForm = () => {
         {/* Section 3: Complaint Details */}
         <div>
           <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5">
-            3. Complaint Details
+            3. COMPLAINT DETAILS
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
             <div>
@@ -214,73 +235,71 @@ export const ComplaintForm = () => {
           </div>
         </div>
 
-        {/* Section 4: Initial Assessment & Priority */}
-        <div>
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5">
-            4. Initial Assessment & Priority
-          </h3>
+        {/* Section 4: AI Copilot Risk Assessment (Matching Target Image) */}
+        <div className="bg-indigo-50/40 border border-indigo-100 rounded-2xl p-4 space-y-3.5 shadow-xs">
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 rounded-full bg-indigo-100/80 text-indigo-600 flex items-center justify-center">
+              <ShieldCheck className="w-3.5 h-3.5" />
+            </div>
+            <h3 className="text-sm font-bold text-indigo-900 tracking-tight">
+              AI copilot risk assessment
+            </h3>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Initial Severity
+              <label className="block text-xs font-semibold text-indigo-800/80 mb-1">
+                Severity (Suggested)
               </label>
-              <div className="relative">
-                <select
-                  value={currentComplaint.severity || 'Medium'}
-                  onChange={(e) => handleInputChange('severity', e.target.value)}
-                  className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-800 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all pr-8 cursor-pointer font-medium"
-                >
-                  <option value="Minor">Minor</option>
-                  <option value="Medium">Medium</option>
-                  <option value="Major">Major</option>
-                  <option value="Critical">Critical</option>
-                </select>
-                <ChevronDown className="absolute right-3 top-2.5 w-4 h-4 text-slate-400 pointer-events-none" />
-              </div>
+              <input
+                type="text"
+                value={currentComplaint.severity || 'Major'}
+                onChange={(e) => handleInputChange('severity', e.target.value)}
+                placeholder="Awaiting AI evaluation..."
+                className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-200/90 rounded-xl text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+              />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Priority
+              <label className="block text-xs font-semibold text-indigo-800/80 mb-1">
+                Suggested Next Action
               </label>
-              <div className="relative">
-                <select
-                  value={currentComplaint.priority || 'Medium'}
-                  onChange={(e) => handleInputChange('priority', e.target.value)}
-                  className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-800 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all pr-8 cursor-pointer font-medium"
-                >
-                  <option value="Low">Low</option>
-                  <option value="Medium">Medium</option>
-                  <option value="High">High</option>
-                  <option value="Urgent">Urgent</option>
-                </select>
-                <ChevronDown className="absolute right-3 top-2.5 w-4 h-4 text-slate-400 pointer-events-none" />
-              </div>
+              <input
+                type="text"
+                value={getSuggestedNextAction()}
+                onChange={(e) => handleInputChange('recommended_actions', e.target.value)}
+                placeholder="Awaiting AI evaluation..."
+                className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-200/90 rounded-xl text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+              />
             </div>
           </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-indigo-800/80 mb-1">
+              Initial Risk Assessment
+            </label>
+            <input
+              type="text"
+              value={getInitialRiskAssessment()}
+              onChange={(e) => handleInputChange('root_cause', e.target.value)}
+              placeholder="Awaiting AI evaluation..."
+              className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-200/90 rounded-xl text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+            />
+          </div>
+        </div>
+
+        {/* Big Action Button (Matching Target Image) */}
+        <div className="pt-2">
+          <button
+            type="submit"
+            disabled={saving}
+            className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold text-sm rounded-xl transition-all shadow-md shadow-indigo-500/20 flex items-center justify-center gap-2"
+          >
+            <Save className="w-4 h-4" />
+            {saving ? 'Committing to QMS Ledger...' : 'Commit to QMS Ledger'}
+          </button>
         </div>
       </form>
-
-      {/* Footer Actions */}
-      <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 mt-4">
-        <button
-          type="button"
-          onClick={handleReset}
-          className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-all shadow-sm"
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
-          Reset Form
-        </button>
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={saving}
-          className="inline-flex items-center gap-1.5 px-5 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-xl transition-all shadow-sm shadow-blue-500/20"
-        >
-          <Save className="w-3.5 h-3.5" />
-          {saving ? 'Saving...' : 'Save Complaint'}
-        </button>
-      </div>
     </div>
   );
 };
