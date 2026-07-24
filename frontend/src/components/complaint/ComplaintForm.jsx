@@ -6,16 +6,13 @@ import {
   RotateCcw, 
   Save, 
   ChevronDown,
-  ShieldCheck
+  ShieldCheck,
+  Lock
 } from 'lucide-react';
 
 export const ComplaintForm = () => {
   const dispatch = useDispatch();
   const { currentComplaint, saving } = useSelector((state) => state.complaint);
-
-  const handleInputChange = (field, value) => {
-    dispatch(updateFormField({ field, value }));
-  };
 
   const handleSave = (e) => {
     e.preventDefault();
@@ -51,12 +48,11 @@ export const ComplaintForm = () => {
       {/* Header */}
       <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
         <div>
-          <h1 className="text-xl font-bold text-slate-800 tracking-tight">Log Customer Complaint</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold text-slate-800 tracking-tight">Log Customer Complaint</h1>
+          </div>
           <p className="text-xs text-slate-500 font-medium mt-0.5">API & FDF Quality Assurance Module</p>
         </div>
-        <span className="px-3 py-1 bg-amber-50 text-amber-700 text-xs font-semibold rounded-full border border-amber-200/60">
-          Pending Triage
-        </span>
       </div>
 
       <form onSubmit={handleSave} className="space-y-4 flex-1">
@@ -72,10 +68,10 @@ export const ComplaintForm = () => {
               </label>
               <input
                 type="text"
+                disabled
                 value={currentComplaint.complaint_source || ''}
-                onChange={(e) => handleInputChange('complaint_source', e.target.value)}
                 placeholder="Awaiting AI extraction..."
-                className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className="w-full px-3 py-2 text-sm bg-slate-100/80 border border-slate-200 rounded-lg text-slate-700 placeholder-slate-400 cursor-not-allowed select-none"
               />
             </div>
             <div>
@@ -84,10 +80,10 @@ export const ComplaintForm = () => {
               </label>
               <input
                 type="text"
+                disabled
                 value={currentComplaint.customer_name || ''}
-                onChange={(e) => handleInputChange('customer_name', e.target.value)}
                 placeholder="Awaiting AI extraction..."
-                className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className="w-full px-3 py-2 text-sm bg-slate-100/80 border border-slate-200 rounded-lg text-slate-700 placeholder-slate-400 cursor-not-allowed select-none"
               />
             </div>
           </div>
@@ -105,10 +101,10 @@ export const ComplaintForm = () => {
               </label>
               <input
                 type="text"
+                disabled
                 value={currentComplaint.product_name || ''}
-                onChange={(e) => handleInputChange('product_name', e.target.value)}
                 placeholder="Awaiting AI extraction..."
-                className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className="w-full px-3 py-2 text-sm bg-slate-100/80 border border-slate-200 rounded-lg text-slate-700 placeholder-slate-400 cursor-not-allowed select-none"
               />
             </div>
 
@@ -118,10 +114,10 @@ export const ComplaintForm = () => {
               </label>
               <input
                 type="text"
+                disabled
                 value={currentComplaint.strength || ''}
-                onChange={(e) => handleInputChange('strength', e.target.value)}
                 placeholder="Awaiting AI extraction..."
-                className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className="w-full px-3 py-2 text-sm bg-slate-100/80 border border-slate-200 rounded-lg text-slate-700 placeholder-slate-400 cursor-not-allowed select-none"
               />
             </div>
 
@@ -131,10 +127,10 @@ export const ComplaintForm = () => {
               </label>
               <input
                 type="text"
+                disabled
                 value={currentComplaint.batch_number || ''}
-                onChange={(e) => handleInputChange('batch_number', e.target.value)}
                 placeholder="Awaiting AI extraction..."
-                className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-800 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className="w-full px-3 py-2 text-sm bg-slate-100/80 border border-slate-200 rounded-lg text-slate-700 font-mono cursor-not-allowed select-none"
               />
             </div>
 
@@ -145,10 +141,10 @@ export const ComplaintForm = () => {
               <div className="relative">
                 <input
                   type="text"
+                  disabled
                   value={currentComplaint.manufacturing_date || ''}
-                  onChange={(e) => handleInputChange('manufacturing_date', e.target.value)}
                   placeholder="Awaiting AI extraction..."
-                  className="w-full px-3 py-2 pr-9 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className="w-full px-3 py-2 pr-9 text-sm bg-slate-100/80 border border-slate-200 rounded-lg text-slate-700 placeholder-slate-400 cursor-not-allowed select-none"
                 />
                 <Calendar className="absolute right-2.5 top-2.5 w-4 h-4 text-slate-400 pointer-events-none" />
               </div>
@@ -161,10 +157,10 @@ export const ComplaintForm = () => {
               <div className="relative">
                 <input
                   type="text"
+                  disabled
                   value={currentComplaint.expiry_date || ''}
-                  onChange={(e) => handleInputChange('expiry_date', e.target.value)}
                   placeholder="Awaiting AI extraction..."
-                  className="w-full px-3 py-2 pr-9 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className="w-full px-3 py-2 pr-9 text-sm bg-slate-100/80 border border-slate-200 rounded-lg text-slate-700 placeholder-slate-400 cursor-not-allowed select-none"
                 />
                 <Calendar className="absolute right-2.5 top-2.5 w-4 h-4 text-slate-400 pointer-events-none" />
               </div>
@@ -177,10 +173,10 @@ export const ComplaintForm = () => {
               <div className="relative">
                 <input
                   type="text"
+                  disabled
                   value={currentComplaint.quantity_affected || ''}
-                  onChange={(e) => handleInputChange('quantity_affected', e.target.value)}
                   placeholder="Awaiting AI extraction..."
-                  className="w-full px-3 py-2 pr-12 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className="w-full px-3 py-2 pr-12 text-sm bg-slate-100/80 border border-slate-200 rounded-lg text-slate-700 placeholder-slate-400 cursor-not-allowed select-none"
                 />
                 <span className="absolute right-3 top-2 text-xs font-medium text-slate-400">unit</span>
               </div>
@@ -200,10 +196,10 @@ export const ComplaintForm = () => {
               </label>
               <input
                 type="text"
+                disabled
                 value={currentComplaint.complaint_type || ''}
-                onChange={(e) => handleInputChange('complaint_type', e.target.value)}
                 placeholder="Awaiting AI extraction..."
-                className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className="w-full px-3 py-2 text-sm bg-slate-100/80 border border-slate-200 rounded-lg text-slate-700 placeholder-slate-400 cursor-not-allowed select-none"
               />
             </div>
             <div>
@@ -212,10 +208,10 @@ export const ComplaintForm = () => {
               </label>
               <div className="relative">
                 <input
-                  type="date"
+                  type="text"
+                  disabled
                   value={currentComplaint.complaint_date || ''}
-                  onChange={(e) => handleInputChange('complaint_date', e.target.value)}
-                  className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className="w-full px-3 py-2 text-sm bg-slate-100/80 border border-slate-200 rounded-lg text-slate-700 cursor-not-allowed select-none"
                 />
               </div>
             </div>
@@ -227,10 +223,10 @@ export const ComplaintForm = () => {
             </label>
             <textarea
               rows={3}
+              disabled
               value={currentComplaint.description || ''}
-              onChange={(e) => handleInputChange('description', e.target.value)}
               placeholder="Awaiting AI extraction..."
-              className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none"
+              className="w-full px-3 py-2 text-sm bg-slate-100/80 border border-slate-200 rounded-lg text-slate-700 placeholder-slate-400 cursor-not-allowed select-none resize-none"
             />
           </div>
         </div>
@@ -253,10 +249,10 @@ export const ComplaintForm = () => {
               </label>
               <input
                 type="text"
+                disabled
                 value={currentComplaint.severity || 'Major'}
-                onChange={(e) => handleInputChange('severity', e.target.value)}
                 placeholder="Awaiting AI evaluation..."
-                className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-200/90 rounded-xl text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-200/90 rounded-xl text-slate-800 font-medium cursor-not-allowed select-none"
               />
             </div>
 
@@ -266,10 +262,10 @@ export const ComplaintForm = () => {
               </label>
               <input
                 type="text"
+                disabled
                 value={getSuggestedNextAction()}
-                onChange={(e) => handleInputChange('recommended_actions', e.target.value)}
                 placeholder="Awaiting AI evaluation..."
-                className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-200/90 rounded-xl text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-200/90 rounded-xl text-slate-800 font-medium cursor-not-allowed select-none"
               />
             </div>
           </div>
@@ -280,20 +276,28 @@ export const ComplaintForm = () => {
             </label>
             <input
               type="text"
+              disabled
               value={getInitialRiskAssessment()}
-              onChange={(e) => handleInputChange('root_cause', e.target.value)}
               placeholder="Awaiting AI evaluation..."
-              className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-200/90 rounded-xl text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+              className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-200/90 rounded-xl text-slate-800 font-medium cursor-not-allowed select-none"
             />
           </div>
         </div>
 
-        {/* Big Action Button (Matching Target Image) */}
-        <div className="pt-2">
+        {/* Action Buttons */}
+        <div className="pt-2 flex items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={handleReset}
+            className="px-4 py-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 font-semibold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            Reset Form
+          </button>
           <button
             type="submit"
             disabled={saving}
-            className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold text-sm rounded-xl transition-all shadow-md shadow-indigo-500/20 flex items-center justify-center gap-2"
+            className="flex-1 py-3 px-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold text-sm rounded-xl transition-all shadow-md shadow-indigo-500/20 flex items-center justify-center gap-2"
           >
             <Save className="w-4 h-4" />
             {saving ? 'Committing to QMS Ledger...' : 'Commit to QMS Ledger'}
