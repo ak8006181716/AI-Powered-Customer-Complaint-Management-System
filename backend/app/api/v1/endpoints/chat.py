@@ -1,6 +1,4 @@
-# pyrefly: ignore [missing-import]
 from fastapi import APIRouter, Depends, HTTPException, status
-# pyrefly: ignore [missing-import]
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.session import get_db
 from app.schemas.complaint import ChatRequest, ChatResponse

@@ -150,11 +150,11 @@ class GroqLLMService:
 
         def get_kv(label: str) -> str:
             stops = "|".join([re.escape(w) for w in labels])
-            pattern = rf"{re.escape(label)}\s*[:=]?\s*([^\n\r]+?)(?=\s*(?:{stops})|\n|\r|$)"
+            pattern = rf"{re.escape(label)}\s*[:=]?\s*([^\n\r.]+?)(?=\s*(?:{stops})|\.|\,|\n|\r|$)"
             m = re.search(pattern, text, re.IGNORECASE)
             if m:
                 val = m.group(1).strip()
-                val = re.sub(r"^(?:FieldValue|Field|Value)\s*", "", val, flags=re.IGNORECASE).strip()
+                val = re.sub(r"^(?:FieldValue|Field|Value)\s*", "", val, flags=re.IGNORECASE).strip(" .,;")
                 return val
             return ""
 
@@ -172,7 +172,7 @@ class GroqLLMService:
         if str_kv: res["strength"] = str_kv
 
         batch_kv = get_kv("Batch/Lot Number") or get_kv("Batch Number") or get_kv("Lot Number")
-        if batch_kv: res["batch_number"] = batch_kv.upper()
+        if batch_kv: res["batch_number"] = batch_kv.rstrip(".").strip().upper()
 
         mfg_kv = get_kv("Manufacturing Date")
         if mfg_kv: res["manufacturing_date"] = mfg_kv
@@ -198,20 +198,26 @@ class GroqLLMService:
 
         # 2. Conversational & Text Regex Fallbacks if fields remain empty
         if not res["manufacturing_date"]:
-            mfg_match = re.search(r"(?:manufacturing|mfg)\s+(?:date|dt)?\s*[:=]?\s*([a-zA-Z0-9\s,/-]+?)(?=\.|\,|\bexpiry\b|\bexp\b|\bplease\b|\n|$)", text, re.IGNORECASE)
-            if mfg_match: res["manufacturing_date"] = mfg_match.group(1).strip()
+            mfg_match = re.search(r"(?:manufacturing|mfg)\s+(?:date|dt)?\s*[:=]?\s*([a-zA-Z0-9\s/-]+)", text, re.IGNORECASE)
+            if mfg_match:
+                sub = mfg_match.group(1).split(".")[0].strip(" .,;")
+                d_m = re.search(r"((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}|\d{1,2}[-/\s][A-Za-z0-9]+[-/\s]\d{2,4}|\d{4}[-/]\d{1,2}[-/]\d{1,2})", sub, re.IGNORECASE)
+                res["manufacturing_date"] = d_m.group(1) if d_m else sub
 
         if not res["expiry_date"]:
-            exp_match = re.search(r"(?:expiry|exp)\s+(?:date|dt)?\s*[:=]?\s*([a-zA-Z0-9\s,/-]+?)(?=\.|\,|\bmanufacturing\b|\bmfg\b|\bplease\b|\n|$)", text, re.IGNORECASE)
-            if exp_match: res["expiry_date"] = exp_match.group(1).strip()
+            exp_match = re.search(r"(?:expiry|exp)\s+(?:date|dt)?\s*[:=]?\s*([a-zA-Z0-9\s/-]+)", text, re.IGNORECASE)
+            if exp_match:
+                sub = exp_match.group(1).split(".")[0].strip(" .,;")
+                d_m = re.search(r"((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}|\d{1,2}[-/\s][A-Za-z0-9]+[-/\s]\d{2,4}|\d{4}[-/]\d{1,2}[-/]\d{1,2})", sub, re.IGNORECASE)
+                res["expiry_date"] = d_m.group(1) if d_m else sub
 
         if not res["batch_number"]:
             batch_match = re.search(r"(?:batch|lot)(?:\s+number|\s+no\.?|\s+#)?\s*[:=]?\s*([a-zA-Z0-9_-]+)", text, re.IGNORECASE)
             if batch_match:
-                res["batch_number"] = batch_match.group(1).upper()
+                res["batch_number"] = batch_match.group(1).rstrip(".").strip().upper()
             else:
-                b_standalone = re.search(r"\b(BT\d+|LOT\d+|B\d{3,})\b", text, re.IGNORECASE)
-                if b_standalone: res["batch_number"] = b_standalone.group(1).upper()
+                b_standalone = re.search(r"\b(AMX\d+|BT\d+|LOT\d+|B\d{3,})\b", text, re.IGNORECASE)
+                if b_standalone: res["batch_number"] = b_standalone.group(1).rstrip(".").strip().upper()
 
         if not res["strength"]:
             strength_match = re.search(r"(\d+(?:\.\d+)?\s*(?:mg|g|mcg|ml|IU|%))", text, re.IGNORECASE)
