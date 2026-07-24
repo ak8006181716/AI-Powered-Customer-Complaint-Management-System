@@ -79,6 +79,12 @@ class ComplaintService:
         if intent == "EDIT_COMPLAINT":
             changes = []
             if existing_data:
+                if data.get("product_name") and data.get("product_name") != existing_data.get("product_name"):
+                    changes.append(f'Product Name to "{data.get("product_name")}"')
+                if data.get("customer_name") and data.get("customer_name") != existing_data.get("customer_name"):
+                    changes.append(f'Customer Name to "{data.get("customer_name")}"')
+                if data.get("strength") and data.get("strength") != existing_data.get("strength"):
+                    changes.append(f'Product Strength to "{data.get("strength")}"')
                 if data.get("batch_number") and data.get("batch_number") != existing_data.get("batch_number"):
                     changes.append(f'Batch / Lot Number to "{data.get("batch_number")}"')
                 if data.get("quantity_affected") and data.get("quantity_affected") != existing_data.get("quantity_affected"):

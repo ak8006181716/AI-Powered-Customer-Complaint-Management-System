@@ -85,6 +85,7 @@ Current Complaint JSON State:
 Instructions:
 1. Update ONLY the fields explicitly specified or implied by the user request.
 2. Keep ALL other pre-existing fields EXACTLY unchanged.
-3. Re-evaluate summary, severity, priority, root_cause, and recommended_actions ONLY IF the edit alters product, quantity, defect type, or severity impact.
-4. Return ONLY the complete updated JSON payload matching the standard complaint structure.
+3. Handle correction phrasing appropriately (e.g., "quantity is 48 not 50" means set quantity_affected to "48 units" or "48 capsules", NOT "48 not").
+4. Re-evaluate summary, severity, priority, root_cause, and recommended_actions ONLY IF the edit alters product, quantity, defect type, or severity impact.
+5. Return ONLY the complete updated JSON payload matching the standard complaint structure.
 """

@@ -239,8 +239,13 @@ class GroqLLMService:
                     res["complaint_source"] = "Hospital"
 
         if not res["quantity_affected"]:
-            qty_match = re.search(r"(\d+)\s*(capcules|capsules|damaged|broken|leaking|defective|units|bottles|tablets|vials|boxes|packs)", text, re.IGNORECASE)
-            if qty_match: res["quantity_affected"] = f"{qty_match.group(1)} {qty_match.group(2)}"
+            qty_match = re.search(r"(\d+)\s*(?:damaged|broken|leaking|defective)?\s*(capcules|capsules|bottles|units|tablets|vials|boxes|packs|pcs|pieces|blisters|syringes|amps|ampoules)", text, re.IGNORECASE)
+            if qty_match:
+                res["quantity_affected"] = f"{qty_match.group(1)} {qty_match.group(2)}"
+            else:
+                desc_match = re.search(r"(\d+)\s*(damaged|broken|leaking|defective)", text, re.IGNORECASE)
+                if desc_match:
+                    res["quantity_affected"] = f"{desc_match.group(1)} units"
 
         if not res["complaint_type"]:
             if "discolored" in text.lower() or "discoloration" in text.lower():
@@ -329,15 +334,55 @@ class GroqLLMService:
         updated = dict(state)
         text = edit_request.strip()
 
-        # 1. Quantity edit: e.g. "affected quantity is 48 capcules", "Change quantity to 50"
-        qty_match = re.search(r"(?:quantity|qty|amount|affected quantity)\s+(?:to|is|=)?\s*(\d+\s*[a-zA-Z]*)", text, re.IGNORECASE)
-        if not qty_match:
-            qty_match = re.search(r"(\d+)\s*(capcules|capsules|bottles|units|tablets|vials)", text, re.IGNORECASE)
-        if qty_match:
-            val = qty_match.group(1).strip()
-            if not any(char.isalpha() for char in val):
-                val = f"{val} units"
-            updated["quantity_affected"] = val
+        units_regex = r"(?:capcules|capsules|bottles|units|tablets|vials|boxes|packs|pcs|pieces|blisters|syringes|amps|ampoules)"
+
+        # Extract existing unit for fallback if user doesn't specify unit
+        existing_qty = state.get("quantity_affected", "") or ""
+        existing_unit = ""
+        if existing_qty:
+            unit_m = re.search(rf"({units_regex})", existing_qty, re.IGNORECASE)
+            if unit_m:
+                existing_unit = unit_m.group(1)
+
+        # 1. Quantity edit: e.g. "quantity is 48 not 50", "affected quantity is 48 capcules", "Change quantity to 50"
+        has_qty_kw = bool(re.search(r"\b(?:quantity|qty|amount|affected quantity|count)\b", text, re.IGNORECASE))
+        has_corr = bool(re.search(r"\b(?:not|instead|rather|was)\b", text, re.IGNORECASE))
+
+        target_num = None
+        target_unit = None
+
+        if has_corr or "not" in text.lower():
+            # Correction pattern: e.g. "48 not 50", "48 capsules not 50", "48 not 50 capsules"
+            corr_m = re.search(
+                rf"(\d+)\s*({units_regex})?\s*(?:,?\s*(?:not|instead of|rather than|was)\s*(\d+)\s*({units_regex})?)",
+                text,
+                re.IGNORECASE
+            )
+            if corr_m:
+                target_num = corr_m.group(1)
+                target_unit = corr_m.group(2) or corr_m.group(4)
+
+        if not target_num and (has_qty_kw or has_corr):
+            # Declaration pattern: e.g. "quantity is 48 capsules", "quantity to 48"
+            decl_m = re.search(
+                rf"(?:quantity|qty|amount|affected quantity|count)\s+(?:to|is|=)?\s*(\d+)\s*({units_regex})?",
+                text,
+                re.IGNORECASE
+            )
+            if decl_m:
+                target_num = decl_m.group(1)
+                target_unit = decl_m.group(2)
+
+        if not target_num:
+            # Standalone unit pattern: e.g. "48 capsules", "50 bottles"
+            unit_m = re.search(rf"(\d+)\s*({units_regex})", text, re.IGNORECASE)
+            if unit_m and (has_qty_kw or has_corr or "quantity" in text.lower()):
+                target_num = unit_m.group(1)
+                target_unit = unit_m.group(2)
+
+        if target_num:
+            final_unit = target_unit or existing_unit or "units"
+            updated["quantity_affected"] = f"{target_num} {final_unit}"
 
         # 2. Batch number edit: e.g. "batch number is BMX240602", "Batch BMX240602"
         batch_match = re.search(r"(?:batch|lot)(?:\s+number|\s+no\.?)?\s+(?:is|to|=)?\s*([a-zA-Z0-9_-]+)", text, re.IGNORECASE)
