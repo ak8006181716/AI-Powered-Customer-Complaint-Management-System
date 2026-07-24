@@ -6,18 +6,21 @@ from app.database.base import Base
 
 logger = logging.getLogger("pharma_app.database")
 
+# Silence noisy SQLAlchemy query logging
+logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
+
 # Primary Engine Setup
 try:
     engine = create_async_engine(
         settings.DATABASE_URL,
-        echo=settings.DEBUG,
+        echo=False,
         future=True,
     )
 except Exception as e:
     logger.warning(f"Could not initialize primary DB URL ({settings.DATABASE_URL}). Falling back to SQLite: {e}")
     engine = create_async_engine(
         settings.SQLITE_FALLBACK_URL,
-        echo=settings.DEBUG,
+        echo=False,
         future=True,
     )
 
