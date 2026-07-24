@@ -1,12 +1,11 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../redux/store';
 import { fetchComplaints } from '../redux/slices/complaintSlice';
 import { ComplaintForm } from '../components/complaint/ComplaintForm';
 import { AIAssistant } from '../components/assistant/AIAssistant';
 
-export const Dashboard: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
+export const Dashboard = () => {
+  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(fetchComplaints());

@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.database.session import init_db
-from app.api.v1.router import api_router
+from app.api.router import api_router
 
 # Configure logging
 logging.basicConfig(
@@ -38,7 +38,7 @@ app.add_middleware(
 )
 
 # Attach API Router
-app.include_router(api_router, prefix=settings.API_V1_STR)
+app.include_router(api_router, prefix=settings.API_STR)
 
 @app.get("/health", tags=["Health"])
 async def health_check():

@@ -4,7 +4,7 @@ from typing import List
 
 class Settings(BaseSettings):
     APP_NAME: str = "Pharma AI Complaint Management System"
-    API_V1_STR: str = "/api/v1"
+    API_STR: str = "/api"
     DEBUG: bool = True
     
     # Database
