@@ -1,37 +1,36 @@
 # AI-Powered Pharmaceutical Customer Complaint Management System
 
-Production-quality, enterprise-grade AI Customer Complaint Intake and Risk Intelligence System tailored for pharmaceutical manufacturing.
+Enterprise-grade AI Customer Complaint Intake and Risk Intelligence System built for pharmaceutical manufacturing (API & Finished Dosage Forms).
 
-Built with **React 19**, **Redux Toolkit**, **FastAPI**, **SQLAlchemy**, **PostgreSQL**, **LangGraph**, and **Gemma 2 9B IT** via the Groq API.
+Built with **React 19**, **Redux Toolkit**, **JavaScript (JSX/JS)**, **FastAPI**, **SQLAlchemy**, **SQLite/PostgreSQL**, **LangGraph**, and **Gemma 2 9B IT** via the Groq API.
 
 ---
 
 ## 🌟 Key Architecture & Features
 
 ### 1. Dual Panel User Interface
-- **Left Panel (AI-Driven Complaint Form)**:
-  - Automatically populated by the AI Assistant.
-  - Read-only to enforce cGMP audit integrity and prevent manual tampering.
+- **Left Panel (Log Customer Complaint)**:
+  - Automatically populated by the AI Assistant / Document Parser.
+  - Read-only fields to enforce audit integrity and prevent manual tampering.
   - Form Sections:
-    - **Origin**: Complaint Source, Customer/Institution Name
-    - **Product**: Product Name, Strength/Dosage, Batch Number, Manufacturing Date, Expiry Date
-    - **Complaint**: Quantity Affected, Complaint Defect Type, Narrative Description
-    - **AI Risk Assessment & CAPA**: Auto-calculated Severity (Critical/Major/Minor), Priority (High/Medium/Low), Complaint Summary, Possible Root Cause, Recommended CAPA actions.
-  - **Metrics & Controls**: Live Data Completeness score gauge (0-100%), Duplicate Batch Warning indicator, Form Reset and Database Save actions.
+    1. **1. ORIGIN & CUSTOMER DETAILS**: Complaint Source, Customer Name
+    2. **2. PRODUCT & BATCH IDENTIFICATION**: Product Name, Product Strength/Grade, Batch/Lot Number, Manufacturing Date, Expiry Date, Quantity Affected
+    3. **3. COMPLAINT DETAILS**: Complaint Type, Complaint Date, Detailed Complaint Description
+    4. **4. AI COPILOT RISK ASSESSMENT**: Auto-calculated Severity (Suggested), Suggested Next Action, Initial Risk Assessment summary.
+  - **Action Buttons**: `Reset Form` (resets intake state) and `Commit to QMS Ledger` (saves complaint).
 
 - **Right Panel (AI Complaint Intake Assistant)**:
   - **Drag & Drop Document Upload**: Supports PDF, DOCX, TXT, and EML files with automatic text parsing and LangGraph extraction.
-  - **Real-Time Extraction Progress Tracker**: Animates intake steps: `Uploading` → `Extracting` → `Analyzing` → `Generating Risk Assessment` → `Completed`.
-  - **AI Chat Assistant**: Supports interactive complaint creation and targeted natural language edits.
-  - **Quick Prompts**: One-click actions for quick testing and validation.
+  - **Extraction Progress Bar**: Animates intake parsing steps (`10%` to `100%`).
+  - **AI Chat Assistant**: Supports interactive complaint intake and targeted natural language edits (*"sorry the batch number is BMX240602 and affected quantity is 48 capcules"*).
 
 ---
 
 ## 🛠 Tech Stack
 
-- **Frontend**: React 19, Redux Toolkit, Tailwind CSS, Axios, Lucide Icons, Google Inter Font.
-- **Backend**: Python 3.12, FastAPI, SQLAlchemy 2.0 (Async), PostgreSQL (with zero-config SQLite fallback).
-- **AI Engine**: LangGraph State Graph, LangChain, Groq API (`gemma2-9b-it` model).
+- **Frontend**: React 19, Redux Toolkit, JavaScript (ES6+ JSX), Tailwind CSS, Axios, Lucide Icons.
+- **Backend**: Python 3.12/3.14, FastAPI, SQLAlchemy 2.0 (Async), SQLite / PostgreSQL.
+- **AI Engine**: LangGraph `StateGraph(ComplaintState)`, Groq API (`gemma2-9b-it` model) with zero-failure heuristic fallbacks.
 
 ---
 
@@ -41,30 +40,31 @@ Built with **React 19**, **Redux Toolkit**, **FastAPI**, **SQLAlchemy**, **Postg
 .
 ├── backend/
 │   ├── app/
-│   │   ├── api/          # REST API endpoints (Chat, Upload, Complaints CRUD)
-│   │   ├── database/     # SQLAlchemy async session & engine management
-│   │   ├── langgraph/    # LangGraph State Graph & Node functions
-│   │   ├── models/       # Database ORM entities (User, Complaint, Document, History, Assessment)
-│   │   ├── prompts/      # cGMP pharma system prompts
-│   │   ├── repositories/ # Data Access Objects (DAO)
-│   │   ├── schemas/      # Pydantic V2 request/response and LLM payload schemas
+│   │   ├── api/          # REST API endpoints (chat.py, upload.py, complaints.py) & router
+│   │   ├── database/     # SQLAlchemy async session & database initialization
+│   │   ├── langgraph/    # LangGraph StateGraph, nodes, and state definitions
+│   │   ├── models/       # Database ORM entities (Complaint, Document, Assessment, etc.)
+│   │   ├── prompts/      # Pharma domain system prompts
+│   │   ├── repositories/ # Data Access Layer
+│   │   ├── schemas/      # Pydantic V2 schemas
 │   │   ├── services/     # Groq LLM service, document parser, complaint service
-│   │   └── config.py     # Environment settings
-│   ├── main.py           # FastAPI app entry point
-│   ├── requirements.txt  # Dependencies
+│   │   └── config.py     # Application configuration settings
+│   ├── main.py           # FastAPI entry point
+│   ├── requirements.txt  # Python dependencies
 │   └── .env.example
 │
 └── frontend/
     ├── src/
     │   ├── components/
-    │   │   ├── assistant/ # AIAssistant, DragDropUpload, ExtractionProgress, ChatContainer
-    │   │   └── complaint/ # ComplaintForm, Risk Assessment view
-    │   ├── pages/         # Dashboard layout
-    │   ├── redux/         # Redux Toolkit store and slices (complaint, chat, upload)
-    │   ├── services/      # Axios API wrapper
-    │   ├── types/         # TypeScript definitions
-    │   ├── App.tsx
-    │   └── main.tsx
+    │   │   ├── assistant/ # AIAssistant.jsx, DragDropUpload.jsx, ExtractionProgress.jsx, ChatContainer.jsx
+    │   │   └── complaint/ # ComplaintForm.jsx (with AI Copilot Risk Assessment Card)
+    │   ├── pages/         # Dashboard.jsx
+    │   ├── redux/         # Redux store and slices (complaintSlice.js, chatSlice.js, uploadSlice.js)
+    │   ├── services/      # Axios API service (api.js)
+    │   ├── App.jsx
+    │   ├── main.jsx
+    │   └── index.css
+    ├── index.html
     ├── package.json
     └── vite.config.ts
 ```
@@ -79,51 +79,52 @@ Built with **React 19**, **Redux Toolkit**, **FastAPI**, **SQLAlchemy**, **Postg
 cd backend
 
 # Create virtual environment
-python -m venv venv
-# On Windows:
-venv\Scripts\activate
-# On Linux/macOS:
-source venv/bin/activate
+python -m venv .venv
+
+# Activate virtual environment
+# Windows (PowerShell):
+.venv\Scripts\Activate.ps1
+# Linux/macOS:
+source .venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
 
-# (Optional) Set your Groq API Key in .env
+# (Optional) Set your Groq API Key in backend/.env
 # GROQ_API_KEY=gsk_...
 
-# Run FastAPI server
+# Start FastAPI dev server
 uvicorn main:app --reload --port 8000
 ```
-*Backend runs on `http://127.0.0.1:8000`. API docs available at `http://127.0.0.1:8000/docs`.*
+*Backend runs on `http://127.0.0.1:8000`. Swagger API docs available at `http://127.0.0.1:8000/docs`.*
 
-### 2. Frontend Setup (React 19 & Redux)
+---
+
+### 2. Frontend Setup (React 19 & JavaScript)
 
 ```bash
 cd frontend
 
-# Install Node modules
+# Install Node dependencies
 npm install
 
-# Start Vite dev server
+# Start Vite development server
 npm run dev
 ```
 *Frontend runs on `http://localhost:5173`.*
 
 ---
 
-## 🔬 Testing Key Features
+## 🔬 Key Demo Scenarios
 
-1. **Feature 1 - Create Complaint via Chat**:
-   - Type or click prompt: `"Customer received 20 damaged bottles of Paracetamol 500mg from Batch BT102."`
-   - Observe the Left Panel auto-populating all 10 fields, Severity, Priority, Summary, Root Cause, and CAPA.
+1. **Natural Language Complaint Intake**:
+   - Paste prompt: `"Apollo Pharmacy reported discolored capsules in Amoxicillin Capsules 500 mg. Batch number AMX240602. Manufacturing date March 2026. Expiry date February 2028. Please log this complaint"`
+   - Observe auto-population of all 10 fields, Manufacturing Date (`March 2026`), Expiry Date (`February 2028`), and AI Copilot Risk Assessment.
 
-2. **Feature 2 - Targeted Edits**:
-   - Type: `"Change quantity to 50."`
-   - Only the Quantity field updates to `50 bottles`. All other fields remain unchanged.
-   - Type: `"The batch number is BT205."`
-   - Only the Batch field updates to `BT205`.
+2. **Targeted Natural Language Edits**:
+   - Type prompt: `"ah sorry the batch number is BMX240602 and affected quantity is 48 capcules"`
+   - Batch Number updates to `BMX240602` and Quantity updates to `48 capcules` while preserving Manufacturing and Expiry dates.
 
-3. **Feature 3 & 4 - Document Upload & Progress**:
-   - Drag and drop any PDF, DOCX, TXT, or EML file into the upload box.
-   - Observe progress steps: `Uploading` → `Extracting` → `Analyzing` → `Generating Risk Assessment` → `Completed`.
-   - The complaint form is auto-populated with extracted details.
+3. **PDF Document Report Parsing**:
+   - Drag & drop a customer complaint PDF into the upload zone.
+   - Key-value extraction isolates table labels and populates fields without string corruptions.
