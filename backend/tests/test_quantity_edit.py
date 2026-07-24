@@ -32,3 +32,12 @@ def test_heuristic_edit_quantity_declaration():
     state = {"quantity_affected": "50 capsules"}
     updated = llm_service._heuristic_edit_processor("change quantity to 48", state)
     assert updated["quantity_affected"] == "48 capsules"
+
+@pytest.mark.asyncio
+async def test_extract_complaint_quantity_omitted_defaults_to_not_specified():
+    text = "Apollo Pharmacy reported discolored capsules in Amoxicillin Capsules 500 mg. Batch number AMX240602. Manufacturing date March 2026. Expiry date February 2028. Please log this complaint"
+    extracted = await llm_service.extract_complaint(text)
+    assert extracted["quantity_affected"] == "Not specified"
+    assert extracted["customer_name"] == "Apollo Pharmacy"
+    assert extracted["batch_number"] == "AMX240602"
+

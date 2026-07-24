@@ -43,6 +43,12 @@ export const ComplaintForm = () => {
     return currentComplaint.root_cause || 'Awaiting AI risk evaluation...';
   };
 
+  const isExtracted = Boolean(
+    currentComplaint.product_name || 
+    currentComplaint.batch_number || 
+    currentComplaint.customer_name
+  );
+
   return (
     <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm h-full flex flex-col justify-between overflow-y-auto">
       {/* Header */}
@@ -70,7 +76,7 @@ export const ComplaintForm = () => {
                 type="text"
                 disabled
                 value={currentComplaint.complaint_source || ''}
-                placeholder="Awaiting AI extraction..."
+                placeholder={isExtracted ? "Not specified" : "Awaiting AI extraction..."}
                 className="w-full px-3 py-2 text-sm bg-slate-100/80 border border-slate-200 rounded-lg text-slate-700 placeholder-slate-400 cursor-not-allowed select-none"
               />
             </div>
@@ -82,7 +88,7 @@ export const ComplaintForm = () => {
                 type="text"
                 disabled
                 value={currentComplaint.customer_name || ''}
-                placeholder="Awaiting AI extraction..."
+                placeholder={isExtracted ? "Not specified" : "Awaiting AI extraction..."}
                 className="w-full px-3 py-2 text-sm bg-slate-100/80 border border-slate-200 rounded-lg text-slate-700 placeholder-slate-400 cursor-not-allowed select-none"
               />
             </div>
@@ -103,7 +109,7 @@ export const ComplaintForm = () => {
                 type="text"
                 disabled
                 value={currentComplaint.product_name || ''}
-                placeholder="Awaiting AI extraction..."
+                placeholder={isExtracted ? "Not specified" : "Awaiting AI extraction..."}
                 className="w-full px-3 py-2 text-sm bg-slate-100/80 border border-slate-200 rounded-lg text-slate-700 placeholder-slate-400 cursor-not-allowed select-none"
               />
             </div>
@@ -116,7 +122,7 @@ export const ComplaintForm = () => {
                 type="text"
                 disabled
                 value={currentComplaint.strength || ''}
-                placeholder="Awaiting AI extraction..."
+                placeholder={isExtracted ? "Not specified" : "Awaiting AI extraction..."}
                 className="w-full px-3 py-2 text-sm bg-slate-100/80 border border-slate-200 rounded-lg text-slate-700 placeholder-slate-400 cursor-not-allowed select-none"
               />
             </div>
@@ -129,7 +135,7 @@ export const ComplaintForm = () => {
                 type="text"
                 disabled
                 value={currentComplaint.batch_number || ''}
-                placeholder="Awaiting AI extraction..."
+                placeholder={isExtracted ? "Not specified" : "Awaiting AI extraction..."}
                 className="w-full px-3 py-2 text-sm bg-slate-100/80 border border-slate-200 rounded-lg text-slate-700 font-mono cursor-not-allowed select-none"
               />
             </div>
@@ -143,7 +149,7 @@ export const ComplaintForm = () => {
                   type="text"
                   disabled
                   value={currentComplaint.manufacturing_date || ''}
-                  placeholder="Awaiting AI extraction..."
+                  placeholder={isExtracted ? "Not specified" : "Awaiting AI extraction..."}
                   className="w-full px-3 py-2 pr-9 text-sm bg-slate-100/80 border border-slate-200 rounded-lg text-slate-700 placeholder-slate-400 cursor-not-allowed select-none"
                 />
                 <Calendar className="absolute right-2.5 top-2.5 w-4 h-4 text-slate-400 pointer-events-none" />
@@ -159,7 +165,7 @@ export const ComplaintForm = () => {
                   type="text"
                   disabled
                   value={currentComplaint.expiry_date || ''}
-                  placeholder="Awaiting AI extraction..."
+                  placeholder={isExtracted ? "Not specified" : "Awaiting AI extraction..."}
                   className="w-full px-3 py-2 pr-9 text-sm bg-slate-100/80 border border-slate-200 rounded-lg text-slate-700 placeholder-slate-400 cursor-not-allowed select-none"
                 />
                 <Calendar className="absolute right-2.5 top-2.5 w-4 h-4 text-slate-400 pointer-events-none" />
@@ -174,8 +180,8 @@ export const ComplaintForm = () => {
                 <input
                   type="text"
                   disabled
-                  value={currentComplaint.quantity_affected || ''}
-                  placeholder="Awaiting AI extraction..."
+                  value={currentComplaint.quantity_affected || (isExtracted ? 'Not specified' : '')}
+                  placeholder={isExtracted ? "Not specified" : "Awaiting AI extraction..."}
                   className="w-full px-3 py-2 pr-12 text-sm bg-slate-100/80 border border-slate-200 rounded-lg text-slate-700 placeholder-slate-400 cursor-not-allowed select-none"
                 />
                 <span className="absolute right-3 top-2 text-xs font-medium text-slate-400">unit</span>

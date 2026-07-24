@@ -4,6 +4,7 @@ import chatReducer from './slices/chatSlice';
 import uploadReducer from './slices/uploadSlice';
 
 export const store = configureStore({
+  
   reducer: {
     complaint: complaintReducer,
     chat: chatReducer,

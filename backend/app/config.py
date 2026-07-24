@@ -13,9 +13,9 @@ class Settings(BaseSettings):
     
     # Groq & AI
     GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
-    MODEL_NAME: str = "gemma2-9b-it"
+    MODEL_NAME: str = "gemma2-9b-it" 
     
-    # Security & CORS
+    # Security & CORS 
     CORS_ORIGINS: List[str] = ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000"]
     
     model_config = SettingsConfigDict(

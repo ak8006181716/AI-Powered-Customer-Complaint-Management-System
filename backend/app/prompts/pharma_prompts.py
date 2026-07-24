@@ -23,7 +23,7 @@ Your task is to extract structured complaint details from the provided text into
 Rules:
 1. Extract every piece of factual information present.
 2. Infer reasonable pharmaceutical defaults if missing (e.g., if "damaged bottles" is mentioned, set complaint_type="Damaged Packaging / Container Defect").
-3. NEVER leave out fields required by the schema; set empty string "" if completely absent in source text.
+3. NEVER leave out fields required by the schema; set "Not specified" for quantity_affected if no explicit count is given in source text, and empty string "" for other optional missing fields.
 4. Convert quantity descriptions into a clear string (e.g. "20 damaged bottles" -> "20 bottles").
 5. Strength format should be explicit (e.g., "500mg").
 6. MUST return ONLY valid JSON matching this exact schema:
@@ -36,7 +36,7 @@ Rules:
   "batch_number": "Lot/Batch identifier (e.g. BT102)",
   "manufacturing_date": "YYYY-MM-DD or readable format if specified",
   "expiry_date": "YYYY-MM-DD or readable format if specified",
-  "quantity_affected": "Quantity of units affected (e.g. 20 bottles, 50 tablets)",
+  "quantity_affected": "Quantity of units affected (e.g. 20 bottles, 50 tablets, or 'Not specified' if omitted)",
   "complaint_type": "Category (Damaged Packaging, Contamination, Potency Loss, Mislabeled)",
   "description": "Comprehensive verbatim narrative of the issue reported",
   "summary": "",

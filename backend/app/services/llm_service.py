@@ -85,6 +85,9 @@ class GroqLLMService:
             extracted_data = self._heuristic_complaint_extractor(text)
 
         # Ensure complete risk assessment is generated
+        if not extracted_data.get("quantity_affected"):
+            extracted_data["quantity_affected"] = "Not specified"
+
         risk_data = await self.generate_risk_assessment(extracted_data)
         extracted_data.update(risk_data)
         
@@ -143,7 +146,7 @@ class GroqLLMService:
         labels = [
             "Complaint Source", "Customer Name", "Product Name", "Product Strength/Grade", "Product Strength", "Strength",
             "Batch/Lot Number", "Batch Number", "Lot Number", "Manufacturing Date",
-            "Expiry Date", "Quantity Affected", "Complaint Type", "Complaint Date",
+            "Expiry Date", "Quantity Affected", "Quantity", "Qty", "Complaint Type", "Complaint Date",
             "Complaint Description", "Initial Severity", "Initial Quality Assessment", "Priority", "Suspected Cause", "Recommended Immediate Action",
             "Field", "Value", "FieldValue"
         ]
@@ -180,7 +183,7 @@ class GroqLLMService:
         exp_kv = get_kv("Expiry Date")
         if exp_kv: res["expiry_date"] = exp_kv
 
-        qty_kv = get_kv("Quantity Affected")
+        qty_kv = get_kv("Quantity Affected") or get_kv("Quantity") or get_kv("Qty")
         if qty_kv: res["quantity_affected"] = qty_kv
 
         type_kv = get_kv("Complaint Type")
@@ -243,9 +246,16 @@ class GroqLLMService:
             if qty_match:
                 res["quantity_affected"] = f"{qty_match.group(1)} {qty_match.group(2)}"
             else:
-                desc_match = re.search(r"(\d+)\s*(damaged|broken|leaking|defective)", text, re.IGNORECASE)
-                if desc_match:
-                    res["quantity_affected"] = f"{desc_match.group(1)} units"
+                qty_num_match = re.search(r"(?:quantity|qty|affected quantity|count)\s*[:=]?\s*(\d+\s*(?:capcules|capsules|bottles|units|tablets|vials|boxes|packs|pcs|pieces|blisters|syringes|amps|ampoules)?)", text, re.IGNORECASE)
+                if qty_num_match:
+                    res["quantity_affected"] = qty_num_match.group(1).strip()
+                else:
+                    desc_match = re.search(r"(\d+)\s*(damaged|broken|leaking|defective)", text, re.IGNORECASE)
+                    if desc_match:
+                        res["quantity_affected"] = f"{desc_match.group(1)} units"
+
+        if not res["quantity_affected"]:
+            res["quantity_affected"] = "Not specified"
 
         if not res["complaint_type"]:
             if "discolored" in text.lower() or "discoloration" in text.lower():

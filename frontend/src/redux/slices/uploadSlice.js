@@ -17,8 +17,9 @@ export const uploadDocument = createAsyncThunk(
     const response = await complaintApi.uploadDocument(file);
     dispatch(setUploadProgress(70));
     
-    if (response.extracted_data) {
-      dispatch(setExtractedComplaint(response.extracted_data));
+    const complaintData = response.complaint || response.extracted_data;
+    if (complaintData) {
+      dispatch(setExtractedComplaint(complaintData));
     }
 
     dispatch(addMessage({
